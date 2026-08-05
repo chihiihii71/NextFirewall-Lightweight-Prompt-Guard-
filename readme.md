@@ -7,7 +7,7 @@
 
 | | |
 |---|---|
-| **Best model** | Cross-Feature Ensemble (Logistic Regression + XGBoost, full ⨯ optimized features) |
+| **Best model** | Cross-Feature Ensemble ((Logistic Regression + XGBoost) ⨯ full features) + ((Linear SVC + XGBoost) ⨯ optimized features) |
 | **Held-out test accuracy** | **97.30%** (F1 0.972, AUC-ROC 0.994, MCC 0.947) |
 | **Feature space reduction** | 7,782 → 2,896 features (**−62.8%**) via Morris sensitivity + Kneedle elbow cut, with < 0.3 pt accuracy cost |
 | **Classifier inference** | **0.037–0.103 ms/sample on CPU** (classifier only; feature extraction excluded) |
@@ -54,7 +54,7 @@ This work introduces several technical contributions:
 
 ## 🏗️ System Architecture
 
-![Methodology Architecture](figures/methodology-architecture.png)
+![Methodology Architecture](figures/Prompt-github-methodology.png)
 
 ## 📂 Repository Structure
 
@@ -156,6 +156,8 @@ Two preprocessing strategies were benchmarked before the hybrid pipeline, each f
 
 These phases established a classical-NLP baseline and a compute-cheaper alternative before introducing the heavier hybrid (BERT-inclusive) feature set in Phase 3.
 
+
+
 ## Phase 3 — Hybrid Feature Engineering
 
 Combined four feature families using a **scikit-learn `ColumnTransformer`** into a **7,782-dimensional** feature vector.
@@ -168,6 +170,8 @@ Combined four feature families using a **scikit-learn `ColumnTransformer`** into
 | BERT | `bert-base-uncased` `[CLS]` embeddings | 768 |
 | **Total** |  | **7,782** |
 
+
+
 ## Base Models (full feature set)
 
 Trained on all 7,782 features:
@@ -179,8 +183,8 @@ Trained on all 7,782 features:
 | LinearSVC | 96.58% | 0.9913 | 0.9316 |
 | Random Forest | 95.86% | 0.9880 | 0.9190 |
 
-
 **Logistic Regression was the strongest single base model and was used to drive the feature-selection step below.**
+
 
 
 ## Feature Selection: Morris Sensitivity + Kneedle Elbow
@@ -205,6 +209,8 @@ Trained on all 7,782 features:
 | BERT | 332 / 768 | 73.0% |
 | **Total** | **2,896 / 7,782 (−62.8%)** | — |
 
+
+
 ## Retrained Models (optimized feature set)
 
 Same four algorithms, retrained from scratch on the 2,896-feature "vital few" set:
@@ -224,6 +230,7 @@ Retraining on 63% fewer features preserved accuracy (within ±0.25%) while reduc
 | Logistic Regression | 874.1 s | 268.5 s | **3.3×** |
 | XGBoost | 1,362.0 s | 593.2 s | **2.3×** |
 | Random Forest | 1,567.7 s | 1,125.6 s | 1.4× |
+
 
 
 ## Ensemble Strategies
