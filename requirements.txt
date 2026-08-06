@@ -1,0 +1,34 @@
+# Core scientific computing
+numpy>=1.24
+pandas>=2.0
+scipy>=1.10
+
+# Machine Learning
+scikit-learn>=1.3
+xgboost>=2.0
+joblib>=1.3
+
+# Deep Learning
+torch>=2.0
+transformers>=4.40
+
+# NLP
+nltk>=3.8
+spacy>=3.7
+langdetect>=1.0.9
+Unidecode>=1.3
+
+# Feature Selection
+SALib>=1.5
+kneed>=0.8
+
+# Visualization
+matplotlib>=3.8
+seaborn>=0.13
+
+# Notebook
+jupyter>=1.0
+ipykernel>=6.0
+
+# Utilities
+tqdm>=4.66
