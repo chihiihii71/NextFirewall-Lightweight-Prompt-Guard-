@@ -5,14 +5,18 @@
 
 ## Results at a glance
 
-| | |
+| Metric | Result |
 |---|---|
-| **Best model** | Cross-Feature Ensemble ((Logistic Regression + XGBoost) ⨯ full features) + ((Linear SVC + XGBoost) ⨯ optimized features) |
-| **Held-out test accuracy** | **97.30%** (F1 0.972, AUC-ROC 0.994, MCC 0.947) |
-| **Feature space reduction** | 7,782 → 2,896 features (**−62.8%**) via Morris sensitivity + Kneedle elbow cut, with < 0.3 pt accuracy cost |
-| **Classifier inference** | **0.037–0.103 ms/sample on CPU** (classifier only; feature extraction excluded) |
-| **Statistical validation** | 25-fold CV, paired t-test, Wilcoxon signed-rank, ANOVA, Friedman — every ensemble gain significant at p < 0.05 |
-| **Dataset** | 37,547 cleaned prompts (MPDD, Kaggle), 60/20/20 stratified split |
+| **Best model** | Cross-Feature Ensemble ((Logistic Regression + XGBoost) × Full Features) + ((Linear SVC + XGBoost) × Optimized Features) |
+| **Held-out test accuracy** | **97.30%** |
+| **F1 / AUC-ROC / MCC** | **0.972 / 0.994 / 0.947** |
+| **Feature reduction** | **7,782 → 2,896 features (−62.8%)** using Morris Sensitivity Analysis + Kneedle |
+| **Training speedup** | Up to **15.3×** faster after feature optimization |
+| **Saved model size** | **≈655 KB** |
+| **Classifier inference** | **≈0.052 ms/sample (CPU)**, **≈0.062 ms/sample (GPU)** |
+| **Feature extraction** | **≈134 ms/sample (CPU)**, **≈13 ms/sample (GPU)** |
+| **Dataset** | **37,547 cleaned prompt samples** |
+| **Statistical validation** | 25-fold CV, paired t-test, Wilcoxon, ANOVA, Friedman (*p* < 0.05) |
 
 ---
 
@@ -268,19 +272,18 @@ All ensemble improvements were statistically significant (**p < 0.05**). Feature
 
 ## Computational Cost Benchmark
 
-All computational cost experiments were benchmarked on **CPU**.
+Computational benchmarking was performed on both CPU and NVIDIA Tesla P100 GPU.
 
-| Ensemble Strategy | Classifier Inference (ms/sample) | Feature Extraction (ms/sample) | Total Latency (ms/sample) | Test Accuracy |
-|---|---:|---:|---:|---:|
-| Soft-Voting (Full Features) | 0.103 | 142.968 | 143.071 | 97.22% |
-| Soft-Voting (Optimized Features) | 0.070 | 143.021* | 143.091 | 97.08% |
-| Cross-Feature Ensemble (LR + XGBoost) | 0.055 | 143.021* | 143.077 | **97.30%** |
-| Cross-Feature Ensemble (LR-Full + SVC/XGB-Opt) | **0.037** | 143.021* | **143.058** | 97.28% |
-| Cross-Feature Ensemble (LR+XGB-Full + SVC+XGB-Opt) | 0.055 | 143.021* | 143.077 | **97.30%** |
+| Metric | CPU | GPU |
+|---|---:|---:|
+| Feature Extraction | **≈134 ms/sample** | **≈13 ms/sample** |
+| Strategy 5 Classifier Inference | **≈0.052 ms/sample** | **≈0.062 ms/sample** |
+| End-to-End Latency | **≈134 ms/sample** | **≈13 ms/sample** |
+| Saved Model Size | **≈655 KB** | **≈655 KB** |
+| Test Accuracy | **97.30%** | **97.30%** |
 
-*Optimized pipelines include full feature extraction (142.968 ms) followed by feature slicing (0.053 ms).*
+> End-to-end latency is dominated by BERT embedding extraction. The lightweight ensemble itself requires only around **0.05–0.06 ms** for prediction.
 
-**Observation:** Classifier inference is very fast (0.037–0.103 ms/sample), but total latency is dominated by BERT feature extraction (~143 ms/sample). Reducing classifier features alone does not reduce end-to-end inference time.
 ## Key Findings
 
 - Achieved **97.30% test accuracy** and **0.994 AUC-ROC** using a lightweight hybrid feature framework without LLM-based guard models.
@@ -288,9 +291,18 @@ All computational cost experiments were benchmarked on **CPU**.
 - Cross-feature ensemble learning delivered the best overall performance, outperforming individual base models.
 - Feature optimization significantly reduced training time (up to **15×** faster), while BERT feature extraction remained the primary inference bottleneck.
 
+## Deployment Highlights
+
+- Lightweight ensemble model (~655 KB)
+- No LLM inference required during prompt classification
+- Real-time classifier inference (~0.05 ms/sample)
+- 97.30% detection accuracy
+- Suitable for deployment as an API, browser extension, chatbot middleware, or edge security service
+
+
 ## Future Work
 
-- Replace BERT with a lightweight or distilled encoder to reduce inference latency.
+- Replace BERT with a lightweight sentence encoder (e.g., MiniLM, DistilBERT, or E5-small) to further reduce end-to-end latency.
 - Package the best ensemble as a lightweight API for deployment.
 - Evaluate on additional prompt injection datasets to assess generalization.
 - Expand testing with adversarial/red-team prompts.
@@ -307,7 +319,7 @@ All computational cost experiments were benchmarked on **CPU**.
 
 ## Reproducing This Work
 
-Currently implemented as a single Kaggle notebook (`prompt-injection-base-retrained-ensemble-final.ipynb`), run on a CPU with internet access enabled (for `pip install langdetect`, `spacy` model download, and Hugging Face `bert-base-uncased` weights).
+Currently implemented as a single Kaggle notebook (`prompt-injection-base-retrained-ensemble-final.ipynb`), The notebook supports both CPU and CUDA-enabled GPU execution. GPU is recommended for faster BERT embedding extraction, while the lightweight ensemble itself runs efficiently on either platform with internet access enabled (for `pip install langdetect`, `spacy` model download, and Hugging Face `bert-base-uncased` weights).
 
 Key dependencies: `scikit-learn`, `xgboost`, `torch`, `transformers`, `spacy` (`en_core_web_sm`), `SALib`, `kneed`, `nltk`, `langdetect`, `joblib`, `seaborn`/`matplotlib`.
 
