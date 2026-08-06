@@ -39,7 +39,7 @@ The final Cross-Feature Ensemble achieved **97.30% held-out test accuracy** whil
 - Improve robustness through hybrid feature engineering and ensemble learning.
 - Validate effectiveness using statistical testing and computational benchmarking.
 
-===
+---
 
 ## ⭐ Key Contributions
 
