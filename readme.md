@@ -63,11 +63,24 @@ This work introduces several technical contributions:
 ## 📂 Repository Structure
 
 ```text
-Prompt-Injection-Lightweight/
+NextFirewall-Lightweight-Prompt-Guard/
+│
 ├── figures/
-│   └── methodology-architecture.png
-├── notebooks/
-│   └── prompt-injection-base-retrained-ensemble-final.ipynb
+│   ├── Prompt-github-methodology.png
+│   └── .gitkeep
+│
+├── notebook/
+│   ├── prompt-injection-base-retrained-ensemble-final.ipynb
+│   ├── prompt-injection_statistical_test.ipynb
+│   ├── computational-cost-base-retrained-cpu.ipynb
+│   ├── computational-cost-cpu-run1.ipynb
+│   ├── computational-cost-cpu-run2.ipynb
+│   ├── computational-cost-gpu-run1.ipynb
+│   ├── computational-cost-gpu-run2.ipynb
+│   ├── computational-cost-gpu-run3.ipynb
+│   └── computational-cost-gpu-run4.ipynb
+│
+├── .gitignore
 ├── README.md
 └── requirements.txt
 ```
@@ -311,32 +324,49 @@ Computational benchmarking was performed on both CPU and NVIDIA Tesla P100 GPU.
 ---
 
 
-
- 
-
-
-
-
 ## Reproducing This Work
 
-Currently implemented as a single Kaggle notebook (`prompt-injection-base-retrained-ensemble-final.ipynb`), The notebook supports both CPU and CUDA-enabled GPU execution. GPU is recommended for faster BERT embedding extraction, while the lightweight ensemble itself runs efficiently on either platform with internet access enabled (for `pip install langdetect`, `spacy` model download, and Hugging Face `bert-base-uncased` weights).
+The complete implementation is provided as Jupyter notebooks in the `notebooks/` directory. The repository includes:
 
-Key dependencies: `scikit-learn`, `xgboost`, `torch`, `transformers`, `spacy` (`en_core_web_sm`), `SALib`, `kneed`, `nltk`, `langdetect`, `joblib`, `seaborn`/`matplotlib`.
+- The complete hybrid feature engineering and ensemble learning pipeline
+- Morris Sensitivity Analysis and Kneedle-based feature selection
+- Statistical validation experiments
+- CPU and GPU computational cost benchmarking
 
-```
-pip install scikit-learn xgboost torch transformers spacy SALib kneed nltk langdetect joblib seaborn matplotlib
+The notebooks support both **CPU** and **CUDA-enabled GPU** execution. A GPU is recommended for faster BERT embedding extraction, while the lightweight ensemble classifier itself runs efficiently on either CPU or GPU.
+
+Before running the notebooks, install the project dependencies and download the required spaCy language model.
+
+```bash
+pip install -r requirements.txt
 python -m spacy download en_core_web_sm
 ```
+
+
 ## Quick Start
 
-Clone the repository
+### 1. Clone the repository
 
-git clone ...
+```bash
+git clone https://github.com/<your-username>/NextFirewall-Lightweight-Prompt-Guard.git
+cd NextFirewall-Lightweight-Prompt-Guard
+```
 
-Install dependencies
+### 2. Install dependencies
 
+```bash
 pip install -r requirements.txt
+python -m spacy download en_core_web_sm
+```
 
-Run the notebook
+### 3. Launch Jupyter Notebook
 
-jupyter notebook notebooks/prompt-injection-base-retrained-ensemble-final.ipynb
+```bash
+jupyter notebook
+```
+
+Open and run:
+
+```text
+notebooks/prompt-injection-base-retrained-ensemble-final.ipynb
+```
